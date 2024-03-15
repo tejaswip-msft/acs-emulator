@@ -27,9 +27,9 @@ namespace AcsEmulatorAPI.Models
 
         public string? RawId { get; set; }
 
-        public CommunicationUser? CommunicationUser { get; set; }
+        public virtual CommunicationUser? CommunicationUser { get; set; }
 
-        public PhoneNumber? PhoneNumber {  get; set; }
+        public virtual PhoneNumber? PhoneNumber {  get; set; }
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Azure.Messaging.EventGrid.SystemEvents;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -73,11 +74,8 @@ namespace AcsEmulatorAPI.Models
     public class CallConnectionTarget
     {
         public Guid Id { get; set; }
-
         public string RawId { get; set; }
-
         public string PhoneNumber { get; set; }
-
         public virtual CallConnection CallConnection { get; set; }
     }
 }

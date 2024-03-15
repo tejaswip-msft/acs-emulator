@@ -5,7 +5,7 @@ namespace AcsEmulatorAPI.Models
 {
     public record CreateCallRequest(
         string CallbackUri,
-        List<CommunicationIdentifier> Targets,
+        CommunicationIdentifier[] Targets,
         CallIntelligenceOptions? CallIntelligenceOptions = null,
         string? OperationContext = null,
         CommunicationUser? Source = null,
@@ -17,15 +17,15 @@ namespace AcsEmulatorAPI.Models
     public record CallConnectionCreation(CallConnectionProperties CallConnectionProperties);
 
     public record CallConnectionProperties(
-        Guid CallConnectionId,
+        string CallConnectionId,
         string CallbackUri,
-        List<CommunicationIdentifier> Targets,
+        CommunicationIdentifier[] Targets,
         CallConnectionState CallConnectionState,
-        string? AnsweredBy,
+        CommunicationIdentifier? AnsweredBy,
         string? CorrelationId,
         string? ServerCallId,
-        string? Source,
-        string? SourceCallerIdNumber,
+        CommunicationIdentifier? Source,
+        PhoneNumber? SourceCallerIdNumber,
         string? SourceDisplayName);
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

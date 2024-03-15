@@ -54,37 +54,33 @@ namespace AcsEmulatorAPI.Endpoints.CallAutomation
             app.MapPost("/calling/callConnections", async (AcsDbContext db, CallAutomationWebSockets sockets, CreateCallRequest req) =>
             {
                 // MVP0: PhoneNumber places a call to a CommunicationUser
-
+                Console.WriteLine(req);
                 _dbContext = db;
                 var callConnection = CallConnection.CreateNew(req.CallbackUri, req.SourceCallerIdNumber?.Value);
-
                 callConnection.AddTargets(req.Targets);
 
                 await db.CallConnections.AddAsync(callConnection);
                 await db.SaveChangesAsync();
 
-                var result = new
-                {
-                    CallConnectionProperties = new
-                    {
-                        CallConnectionId = callConnection.Id,
-                        callConnection.AnsweredBy,
-                        callConnection.CallConnectionState,
-                        callConnection.CallbackUri,
-                        callConnection.CorrelationId,
-                        callConnection.ServerCallId,
-                        callConnection.Source,
-                        callConnection.SourceCallerIdNumber,
-                        callConnection.SourceDisplayName,
-                        Targets = callConnection.Targets.Select(x => new CommunicationIdentifier(x.RawId)).ToList()
-                    }
-                };
+                var result = new CallConnectionProperties(
+                    AnsweredBy: new CommunicationIdentifier(callConnection.AnsweredBy),
+                    CallConnectionId: callConnection.Id.ToString(),
+                    CallConnectionState: callConnection.CallConnectionState,
+                    CallbackUri: callConnection.CallbackUri,
+                    CorrelationId: callConnection.CorrelationId,
+                    ServerCallId: callConnection.ServerCallId,
+                    Source: new CommunicationIdentifier(callConnection.Source),
+                    SourceCallerIdNumber: new PhoneNumber(callConnection.SourceCallerIdNumber),
+                    SourceDisplayName: callConnection.SourceDisplayName,
+                    Targets: callConnection.Targets.Select(x => new CommunicationIdentifier(new PhoneNumber(x.PhoneNumber))).ToArray()
+                    );
 
                 if (ContainsEmulatorDeviceNumber(req.Targets))
                 {
                     // place call to Emulator UI client
                     await sockets.MakePhoneCall(emulatorDeviceNumber, req.SourceCallerIdNumber?.Value, req.SourceDisplayName);
-                    _connections.Add(emulatorDeviceNumber, callConnection.Id);
+                    if (!_connections.ContainsKey(emulatorDeviceNumber)) 
+                        _connections.Add(emulatorDeviceNumber, callConnection.Id);
                 }
 
                 return Results.Created($"/calling/callConnections/{callConnection.Id}", result);
@@ -125,19 +121,19 @@ namespace AcsEmulatorAPI.Endpoints.CallAutomation
                 }
 
                 // Return the CallConnection entity properties as the response
-                return Results.Ok(new
-                {
-                    callConnection.Id,
-                    callConnection.AnsweredBy,
-                    callConnection.CallConnectionState,
-                    callConnection.CallbackUri,
-                    callConnection.CorrelationId,
-                    callConnection.ServerCallId,
-                    callConnection.Source,
-                    callConnection.SourceCallerIdNumber,
-                    callConnection.SourceDisplayName,
-                    Targets = callConnection.Targets.Select(x => new CommunicationIdentifier(x.RawId)).ToArray()
-                });
+                var result = new CallConnectionProperties(
+                    CallConnectionId: callConnection.Id.ToString(),
+                    AnsweredBy: new CommunicationIdentifier(callConnection.AnsweredBy),
+                    CallConnectionState: callConnection.CallConnectionState,
+                    CallbackUri: callConnection.CallbackUri,
+                    CorrelationId: callConnection.CorrelationId,
+                    ServerCallId: callConnection.ServerCallId,
+                    Source: new CommunicationIdentifier(callConnection.Source),
+                    SourceCallerIdNumber: new PhoneNumber(callConnection.SourceCallerIdNumber),
+                    SourceDisplayName: callConnection.SourceDisplayName,
+                    Targets: callConnection.Targets.Select(x => new CommunicationIdentifier(x.RawId)).ToArray()
+                    );
+                return Results.Ok(result);
             });
 
 

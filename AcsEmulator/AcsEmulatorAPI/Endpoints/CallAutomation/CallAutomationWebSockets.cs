@@ -101,7 +101,7 @@ namespace AcsEmulatorAPI.Endpoints.CallAutomation
 
             while (!receiveResult.CloseStatus.HasValue)
             {
-                var received = Encoding.UTF8.GetString(buffer, 0, receiveResult.Count);
+                var received = Encoding.UTF8.GetString(buffer);
 
                 // todo: handle
                 _logger.LogInformation($"{phoneNumber} sent: {received}");
