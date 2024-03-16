@@ -61,6 +61,7 @@ app.MapPost("/outboundCall", async (ILogger<Program> logger) =>
 
 app.MapPost("/api/callbacks", async (CloudEvent[] cloudEvents, ILogger<Program> logger) =>
 {
+    Console.WriteLine("got cloud event" + cloudEvents[0]);
     foreach (var cloudEvent in cloudEvents)
     {
         CallAutomationEventBase parsedEvent = CallAutomationEventParser.Parse(cloudEvent);
