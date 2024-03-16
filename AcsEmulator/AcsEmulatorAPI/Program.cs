@@ -67,6 +67,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<Trouter>();
 builder.Services.AddSingleton<CallAutomationWebSockets>();
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<WebhookPublishingService>();
 builder.Services.AddSingleton<CallAutomationController>();
 
 if (!string.IsNullOrEmpty(builder.Configuration["EventGridSimulatorSystemTopicHostname"])

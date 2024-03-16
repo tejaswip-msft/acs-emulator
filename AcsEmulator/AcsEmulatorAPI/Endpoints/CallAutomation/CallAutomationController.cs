@@ -1,4 +1,5 @@
 ﻿using AcsEmulatorAPI.Models;
+using AcsEmulatorAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,13 +10,15 @@ namespace AcsEmulatorAPI.Endpoints.CallAutomation
     {
         private readonly IDbContextFactory<AcsDbContext> _dbContextFactory;
         private readonly CallAutomationWebSockets _sockets;
+        private readonly WebhookPublishingService _webhooks;
         private readonly ILogger<Program> _logger;
         private Dictionary<string, Guid> _connections = new();
 
-        public CallAutomationController(IDbContextFactory<AcsDbContext> dbContextFactory, CallAutomationWebSockets sockets, ILogger<Program> logger)
+        public CallAutomationController(IDbContextFactory<AcsDbContext> dbContextFactory, CallAutomationWebSockets sockets, WebhookPublishingService webhooks, ILogger<Program> logger)
         {
             _dbContextFactory = dbContextFactory;
             _sockets = sockets;
+            _webhooks = webhooks;
             _logger = logger;
 
             ListenToIncomingMessages();
@@ -43,6 +46,7 @@ namespace AcsEmulatorAPI.Endpoints.CallAutomation
                                 {
                                     connection.CallConnectionState = CallConnectionState.Connected;
                                     await dbContext.SaveChangesAsync();
+                                    await _webhooks.SendCallConnectedEventAsync(new Uri(connection.CallbackUri), connection.Id.ToString());
                                 }
                             }
                             break;

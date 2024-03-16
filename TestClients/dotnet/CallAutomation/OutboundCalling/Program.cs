@@ -7,19 +7,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Your ACS resource connection string
-var acsConnectionString = Environment.GetEnvironmentVariable("ACS_CONNECTION_STRING");
+var acsConnectionString = "endpoint=https://localhost/;accessKey=pw==";
 
 // Your ACS resource phone number will act as source number to start outbound call
-var acsPhonenumber = Environment.GetEnvironmentVariable("ACS_PHONE_NUMBER");
+var acsPhonenumber = "+1234555000";
 
 // Target phone number you want to receive the call.
-var targetPhonenumber = Environment.GetEnvironmentVariable("TARGET_PHONE_NUMBER");
+var targetPhonenumber = "+12345556789";
 
 // Base url of the app
-var callbackUriHost = Environment.GetEnvironmentVariable("CALLBACK_URI_HOST_WITH_PROTOCOL");
+var callbackUriHost = "http://localhost:5096/api/callbacks";
 
 // Your cognitive service endpoint
-var cognitiveServiceEndpoint = Environment.GetEnvironmentVariable("COGNITIVE_SERVICE_ENDPOINT");
+var cognitiveServiceEndpoint = "http://cognitive/";
 
 // text to play
 const string SpeechToTextVoice = "en-US-NancyNeural";
